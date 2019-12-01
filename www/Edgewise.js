@@ -1,5 +1,4 @@
 var Edgewise = {
-
   elements: {}, // all the important DOM elements
   timesArray: [], // array of integers (in seconds)
   currentTimeChunk: null, // integer index into timesArray
@@ -13,24 +12,22 @@ var Edgewise = {
   tickSound: null,
   expiredSound: null,
 
-  //call this to start it.  pass it a container element
-  // and two sounds
-  init: function(container, tickSound, expiredSound, host, translateString) {
+  //call this to start it.  pass it a container element,
+  // two sounds (optional), a host url (optional, for syncing),
+  init: function(container, tickSound, expiredSound, host) {
     var self = this;
-
-    if(!translateString) {
-      translateString = function(s) {
-        return s;
-      }
-    }
 
     // unfinished sync stuff
     var session = new URL(window.location.href).searchParams.get('session');
 
+
+    // todo: break this out to a function, it
+    // has gotten pretty long
     if(session) {
       this.session = session;
 
       // set up global callback function for syncing
+
       window.syncWithPrimary = function(data) {
         if(data.error) {
           alert('synchronization session id not found')
@@ -146,7 +143,7 @@ var Edgewise = {
     this.update();
 
 
-    // is we aren't a replica, make a box for making a syncSession
+    // if we aren't a replica, make a box for making a syncSession
     // todo: handle case of their being no sync server
     if(!this.session) {
       this.elements.primaryControls = et.makeElement('div', {
@@ -159,15 +156,18 @@ var Edgewise = {
 
       this.elements.shareButton = et.makeElement('input', {
           type: 'button',
-          className: 'btn',
-          style: {width: '200px'},
+          className: 'btn bigBtn',
           value: 'share with replicas',
           onclick: function() {
-                  // set up global callback function for syncing
+
+            // todo: break this out to a function, it
+            // has gotten pretty long
+
+            // set up global callback function for syncing
             window.setSyncSessionId = function(id) {
               self.elementShareUrlContainer.innerHTML = '';
               et.makeElement('input', {
-                  style: {width: '300px'},
+                  className: 'inputUrl',
                   value: window.location.href + '?session=' + id,
                   type: 'text'
                 }, self.elementShareUrlContainer);
@@ -194,14 +194,15 @@ var Edgewise = {
                 '&cachebust=' + Math.random();
             document.body.appendChild(scriptTag);
             }
-
         }, buttonHolder);
 
       this.elementShareUrlContainer = et.makeElement('div', {
         }, this.elements.primaryControls);
     }
+    window.onresize = function(){
+       self.buildTimeline();
+    };
   },
-
 
   // this just adjusts the yellow border to make the proper timeline
   // chunk shown as current
@@ -234,13 +235,15 @@ var Edgewise = {
     this.secondsLeft = -1;
     this.timelineElems = [];
 
+    var width = this.elements.timeline.offsetWidth;
+
     for(var i=0; i<this.timesArray.length; i++) {
       this.timelineElems[i] = ElementTools.makeElement('div', {
           style: {
               backgroundColor: this.people[i%this.people.length].color,
               // todo: fix the hardcoded width
               width: (Math.round(((this.timesArray[i] *
-                     (800 - 10 * this.timesArray.length)) /
+                     (width - 10 * this.timesArray.length)) /
                      this.totalTime))) + 'px'
             },
           className: 'timelineChunk',

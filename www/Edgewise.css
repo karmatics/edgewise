@@ -11,7 +11,6 @@ body {
   margin-top: 80px;
   padding: 10px;
   border-radius: 5px;
-
 }
 
 .btn {
@@ -58,6 +57,10 @@ body {
   text-shadow: none;
 }
 
+.bigBtn {
+  width: 230px;
+}
+
 .btnHolder {
   width: 185px;
   margin: 5px auto 3px auto;
@@ -95,15 +98,16 @@ body {
  font-weight: normal;
 }
 
-
-.txt {
-  width: 150px;
+.inputUrl {
+  width: 300px;
+  font-size: 15px;
+  padding: 4px;
 }
 
 .timeline {
-  height: 20px;
+  width: 90%;
   margin: auto;
-  width: 800px;
+  height: 20px;
   position: relative;
 }
 
@@ -148,11 +152,74 @@ body {
 
 .timerText {
   text-shadow: 2px 2px 2px #000;
-  padding:80px;
+  padding: 80px;
   height: 40px;
-  margin: auto;
-  width: 800px;
   overflow: hidden;
   text-align: center;
   font-size: 100px;
+}
+
+
+/* media queries only go so far in detecting
+   whether it is a small screen. but that is
+   what this is attempting */
+
+@media only screen and (max-width: 1000px) {
+
+  body {
+    font-size: 28px;
+  }
+
+  .controls {
+    width: 720px;
+    margin-top: 115px;
+    padding: 22px;
+    border-radius: 11px;
+  }
+
+  .inpLabel {
+    width: 640px;
+    height: 42px;
+    padding-bottom: 8px;
+   }
+
+  .inpLabel div {
+    width: 198px;
+    padding-top: 12px;
+    font-size: 32px;
+  }
+
+  .inpLabel input {
+    width: 295px;
+    font-size: 35px;
+    padding: 7px;
+  }
+
+  .inpLabel span {
+   width: 95px;
+   padding: 12px 0 0 9px;
+   font-size: 31px;
+  }
+
+  .btn {
+    width: 186px;
+    font-size: 30px;
+    margin: 5px;
+  }
+
+  .bigBtn {
+    width: 360px;
+  }
+
+  .btnHolder {
+    width: 425px;
+    margin: 29px auto 13px auto;
+  }
+
+  .inputUrl {
+    width: 700px;
+    font-size: 35px;
+    padding: 7px;
+  }
+
 }

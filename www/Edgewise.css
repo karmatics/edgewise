@@ -159,67 +159,13 @@ body {
   font-size: 100px;
 }
 
+@media only screen and (max-width: 500px) {
 
-/* media queries only go so far in detecting
-   whether it is a small screen. but that is
-   what this is attempting */
-
-@media only screen and (max-width: 1000px) {
-
-  body {
-    font-size: 28px;
-  }
-
-  .controls {
-    width: 720px;
-    margin-top: 115px;
-    padding: 22px;
-    border-radius: 11px;
-  }
-
-  .inpLabel {
-    width: 640px;
-    height: 42px;
-    padding-bottom: 8px;
-   }
-
-  .inpLabel div {
-    width: 198px;
-    padding-top: 12px;
-    font-size: 32px;
-  }
-
-  .inpLabel input {
-    width: 295px;
-    font-size: 35px;
-    padding: 7px;
-  }
-
-  .inpLabel span {
-   width: 95px;
-   padding: 12px 0 0 9px;
-   font-size: 31px;
-  }
-
-  .btn {
-    width: 186px;
-    font-size: 30px;
-    margin: 5px;
-  }
-
-  .bigBtn {
-    width: 360px;
-  }
-
-  .btnHolder {
-    width: 425px;
-    margin: 29px auto 13px auto;
-  }
-
-  .inputUrl {
-    width: 700px;
-    font-size: 35px;
-    padding: 7px;
-  }
+.timerText {
+  padding: 40px;
+  height: 30px;
+  font-size: 50px;
+}
 
 }
+

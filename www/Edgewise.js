@@ -243,7 +243,7 @@ var Edgewise = {
               backgroundColor: this.people[i%this.people.length].color,
               // todo: fix the hardcoded width
               width: (Math.round(((this.timesArray[i] *
-                     (width - 10 * this.timesArray.length)) /
+                     (width - 5 * this.timesArray.length)) /
                      this.totalTime))) + 'px'
             },
           className: 'timelineChunk',

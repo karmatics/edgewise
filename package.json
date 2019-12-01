@@ -6,7 +6,7 @@
   "private": true,
   "dependencies": {
     "compression": "1.6.2",
-    "express": "4.4.5"
+    "express": "4.5.0"
   },
   "devDependencies": {},
   "scripts": {

@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name=”viewport” content=”width=device-width, initial-scale=1″>
+<script src="Edgewise.js"></script>
+<link rel='stylesheet' href='Edgewise.css'>
+</head>
+<body></body>
+
+<script>
+
+  // If you don't want to host the sounds, you can pull them from
+  // pianop.ly server by using 'https://pianop.ly/Edgewise/sounds/' instead
+  var soundPath = './sounds/';
+
+  // Can use 'https://pianop.ly/Edgewise' if you want
+  // the synchronization capabilities but don't want to
+  // run a server (such as if you want to statically host the html).
+
+  // If you don't want synchronization abilities, just use null.
+  var synchronizationHost = './';
+
+  // This starts the app by sending it basic stuff such as a DOM element
+  // to load the widget into. Here we simply load it into the body element.
+  // We also pass in two Audio elements for the sounds.
+  // (pass null for a quieter app)
+  Edgewise.init(
+    document.body,
+    new Audio(soundPath + 'tick.mp3'),
+    new Audio(soundPath + 'chime.mp3'),
+    synchronizationHost
+  );
+</script>
+</html>

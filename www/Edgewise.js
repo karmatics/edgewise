@@ -17,40 +17,11 @@ var Edgewise = {
   init: function(container, tickSound, expiredSound, host) {
     var self = this;
 
-    // unfinished sync stuff
-    var session = new URL(window.location.href).searchParams.get('session');
+    this.session = new URL(window.location.href).searchParams.get('session');
+    this.host = host;
 
-
-    // todo: break this out to a function, it
-    // has gotten pretty long
-    if(session) {
-      this.session = session;
-
-      // set up global callback function for syncing
-
-      window.syncWithPrimary = function(data) {
-        if(data.error) {
-          alert('synchronization session id not found')
-          return;
-        }
-        var people = data.names.split(',')
-        for(var i=0;i<self.inputElems.people.length; i++) {
-          self.inputElems.people[i].setValue(people[i] || '');
-        }
-        self.inputElems.times.setValue(data.times);
-        self.inputValuesChanged();
-
-        // todo: calculate these from current time, elapsed, etc
-        // Edgewise.currentTimeChunk = 2;
-        // Edgewise.secondsLeft = 22;
-        Edgewise.update();
-      };
-      // add a script tag to the document to retrieve this js 'file'
-      // (actually dynamically generated, "jsonP"
-      var scriptTag = document.createElement('script');
-      scriptTag.src = host + 'syncReplicaWithPrimary.js?id=' + this.session +
-          '&cachebust=' + Math.random();
-      document.body.appendChild(scriptTag);
+    if(this.session) {
+      this.syncWithPrimary();
     }
 
     // sounds to play when events happen. If null, it will be quiet
@@ -159,41 +130,8 @@ var Edgewise = {
           className: 'btn bigBtn',
           value: 'share with replicas',
           onclick: function() {
-
-            // todo: break this out to a function, it
-            // has gotten pretty long
-
-            // set up global callback function for syncing
-            window.setSyncSessionId = function(id) {
-              self.elementShareUrlContainer.innerHTML = '';
-              et.makeElement('input', {
-                  className: 'inputUrl',
-                  value: window.location.href + '?session=' + id,
-                  type: 'text'
-                }, self.elementShareUrlContainer);
-            };
-            var scriptTag = document.createElement('script');
-
-            var data = {
-                currentTime: 45, // todo
-                times: self.inputElems.times.getValue(),
-                names: self.people.map(function(item){
-                    return item.name; // check for commas?
-                  }).join(','),
-                isPlaying: (self.timerHandle)?'true':'false'
-              };
-
-              var params = [];
-              for(var i in data) {
-                params.push(i + '=' + data[i]);
-              }
-
-            // todo: get url from somewhere (html file?)
-            scriptTag.src = host + 'createOrUpdateSyncSession.js?' +
-                params.join('&') +
-                '&cachebust=' + Math.random();
-            document.body.appendChild(scriptTag);
-            }
+            self.createOrUpdateSyncSession();
+          }
         }, buttonHolder);
 
       this.elementShareUrlContainer = et.makeElement('div', {
@@ -204,6 +142,39 @@ var Edgewise = {
     };
   },
 
+  createOrUpdateSyncSession: function() {
+    var self = this;
+
+    window.setSyncSessionId = function(id) {
+      self.elementShareUrlContainer.innerHTML = '';
+      ElementTools.makeElement('input', {
+          className: 'inputUrl',
+          value: window.location.href + '?session=' + id,
+          type: 'text'
+        }, self.elementShareUrlContainer);
+    };
+
+    var data = {
+        currentTime: 45, // todo
+        times: self.inputElems.times.getValue(),
+        names: self.people.map(function(item){
+            return item.name; // check for commas?
+          }).join(','),
+        isPlaying: (self.timerHandle)?'true':'false'
+      };
+
+      var params = [];
+      for(var i in data) {
+        params.push(i + '=' + data[i]);
+      }
+
+    var scriptTag = document.createElement('script');
+    scriptTag.src = this.host + 'createOrUpdateSyncSession.js?' +
+        params.join('&') +
+        '&cachebust=' + Math.random();
+    document.body.appendChild(scriptTag);
+  },
+
   // this just adjusts the yellow border to make the proper timeline
   // chunk shown as current
   updateSelectedChunk: function() {
@@ -211,6 +182,36 @@ var Edgewise = {
         this.timelineElems[i].className =
           (i==this.currentTimeChunk) ? 'timelineChunkSel' : 'timelineChunk'
     }
+  },
+
+  // if we are a replica, make a call to the server to synchronize
+  // ourselves with the primary
+  syncWithPrimary: function() {
+      var self = this;
+
+      window.syncWithPrimary = function(data) {
+        if(data.error) {
+          alert('synchronization session id not found')
+          return;
+        }
+        var people = data.names.split(',')
+        for(var i=0;i<self.inputElems.people.length; i++) {
+          self.inputElems.people[i].setValue(people[i] || '');
+        }
+        self.inputElems.times.setValue(data.times);
+        self.inputValuesChanged();
+
+        // todo: calculate these from current time, elapsed, etc
+        // Edgewise.currentTimeChunk = 2;
+        // Edgewise.secondsLeft = 22;
+        Edgewise.update();
+      };
+      // add a script tag to the document to retrieve this js 'file'
+      // (actually dynamically generated, "jsonP"
+      var scriptTag = document.createElement('script');
+      scriptTag.src = this.host + 'syncReplicaWithPrimary.js?id=' + this.session +
+          '&cachebust=' + Math.random();
+      document.body.appendChild(scriptTag);
   },
 
   // Build the whole timeline. Done when starting, as well as when

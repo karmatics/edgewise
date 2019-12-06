@@ -1,11 +1,21 @@
 var Edgewise = {
   elements: {}, // all the important DOM elements
-  timesArray: [], // array of integers (in seconds)
-  currentTimeChunk: null, // integer index into timesArray
-  timelineElements: null, // one per item in timesArray
-  timerHandle: null, // setTimeout handle
 
-  whichPerson: 1,
+  // the three together can be used to determine where we are
+  // currently. This is a tad awkward, sorry.
+  timesArray: [], // array of integers (in minutes)
+  currentTimeChunk: null, // integer index into timesArray
+  secondsLeft : 0,
+
+  totalTime : 0, // minutes
+
+  timelineElems: null, // The colored bars. one per item in timesArray.
+
+  timerHandle: null, // setTimeout handle (in case you want to clear it)
+
+  timerDelay : 1000, // milliseconds. How long the timer sleeps each time.
+
+  whichPerson: 0,
   people: [], // array of people, with members "name" and "color"
   colors: ['#5f5', '#58f', '#f50', '#f0f'],
 
@@ -17,18 +27,22 @@ var Edgewise = {
   init: function(container, tickSound, expiredSound, host) {
     var self = this;
 
-    this.session = new URL(window.location.href).searchParams.get('session');
     this.host = host;
 
+    // get the session off the url of the page (it will be there
+    //  if this is a replica, for instance the url might end
+    //  with "?session=as2gf6" )
+    this.session = new URL(window.location.href).searchParams.get('session');
+
     if(this.session) {
-      this.syncWithPrimary();
+      this.syncWithPrimary(); // note: this should happen in a timer loop
     }
 
     // sounds to play when events happen. If null, it will be quiet
     this.tickSound = tickSound;
     this.expiredSound = expiredSound;
 
-    // ElementTools is a micro-library that just is included at
+    // ElementTools is a micro-library that is included at
     // the bottom of this file.
     var et = ElementTools;
 
@@ -134,7 +148,7 @@ var Edgewise = {
           }
         }, buttonHolder);
 
-      this.elementShareUrlContainer = et.makeElement('div', {
+      this.elements.shareUrlContainer = et.makeElement('div', {
         }, this.elements.primaryControls);
     }
     window.onresize = function(){
@@ -142,16 +156,19 @@ var Edgewise = {
     };
   },
 
+  // if this is the primary, this calls to the server to create
+  // a new sync session that can be shared with replicas
   createOrUpdateSyncSession: function() {
     var self = this;
 
+    // this global function is known to the server
     window.setSyncSessionId = function(id) {
-      self.elementShareUrlContainer.innerHTML = '';
+      self.elements.shareUrlContainer.innerHTML = '';
       ElementTools.makeElement('input', {
           className: 'inputUrl',
           value: window.location.href + '?session=' + id,
           type: 'text'
-        }, self.elementShareUrlContainer);
+        }, self.elements.shareUrlContainer);
     };
 
     var data = {
@@ -204,7 +221,7 @@ var Edgewise = {
         // todo: calculate these from current time, elapsed, etc
         // Edgewise.currentTimeChunk = 2;
         // Edgewise.secondsLeft = 22;
-        Edgewise.update();
+        self.update();
       };
       // add a script tag to the document to retrieve this js 'file'
       // (actually dynamically generated, "jsonP"
